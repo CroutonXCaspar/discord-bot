@@ -98,6 +98,71 @@ async def on_message(message):
 async def heure(interaction: discord.Interaction):
     now = datetime.now().strftime("%H:%M:%S")
     await interaction.response.send_message(f"Il est {now}")
+
+
+@bot.tree.command(name="blague", description="Affiche une blague aléatoire")
+async def blague(interaction: discord.Interaction):
+    blagues = [
+        "Pourquoi les plongeurs plongent-ils toujours en arrière et jamais en avant ? Parce que sinon ils tombent dans le bateau.",
+        "Quel est le comble pour un électricien ? De ne pas être au courant.",
+        "Pourquoi les canards sont-ils toujours à l'heure ? Parce qu'ils sont dans l'étang."
+    ]
+    await interaction.response.send_message(random.choice(blagues))
+
+@bot.tree.command(name="roll", description="Lance un dé à 6 faces")
+async def roll(interaction: discord.Interaction):
+    resultat = random.randint(1, 6)
+    await interaction.response.send_message(f"🎲 Vous avez obtenu : {resultat}")
+
+@bot.tree.command(name="citation", description="Affiche une citation inspirante")
+async def citation(interaction: discord.Interaction):
+    citations = [
+        "Le succès, c'est tomber sept fois, se relever huit. - Proverbe japonais",
+        "La vie, c'est comme une bicyclette, il faut avancer pour ne pas perdre l'équilibre. - Albert Einstein",
+        "Faites de votre vie un rêve, et d'un rêve, une réalité. - Antoine de Saint-Exupéry"
+    ]
+    await interaction.response.send_message(random.choice(citations))
+
+@bot.tree.command(name="avatar", description="Affiche l'avatar d'un utilisateur")
+async def avatar(interaction: discord.Interaction, membre: discord.Member):
+    await interaction.response.send_message(f"L'avatar de {membre.mention} : {membre.avatar.url}")
+
+
+@bot.tree.command(name="sondage", description="Crée un sondage simple")
+async def sondage(interaction: discord.Interaction, question: str):
+    # Vérifie si l'utilisateur a la permission de gérer les messages
+    if not interaction.user.guild_permissions.manage_messages:
+        await interaction.response.send_message(
+            "❌ Vous n'avez pas la permission de créer un sondage.", ephemeral=True
+        )
+        return
+
+    # Envoie le sondage
+    message = await interaction.response.send_message(f"📊 **Sondage** : {question}")
+    # Ajoute des réactions pour le sondage
+    message = await interaction.original_response()
+    await message.add_reaction("👍")
+    await message.add_reaction("👎")
+
+
+@bot.tree.command(name="pfc", description="Joue à Pierre-Feuille-Ciseaux avec le bot")
+async def pfc(interaction: discord.Interaction, choix: str):
+    options = ["pierre", "feuille", "ciseaux"]
+    bot_choix = random.choice(options)
+    if choix not in options:
+        await interaction.response.send_message("Choisissez entre : pierre, feuille ou ciseaux.")
+        return
+
+    if choix == bot_choix:
+        resultat = "Égalité !"
+    elif (choix == "pierre" and bot_choix == "ciseaux") or \
+         (choix == "feuille" and bot_choix == "pierre") or \
+         (choix == "ciseaux" and bot_choix == "feuille"):
+        resultat = "Vous avez gagné ! 🎉"
+    else:
+        resultat = "Le bot a gagné ! 😢"
+
+    await interaction.response.send_message(f"Vous avez choisi : {choix}\nLe bot a choisi : {bot_choix}\n**{resultat}**")
     
     
 
