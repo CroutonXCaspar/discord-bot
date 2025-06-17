@@ -256,7 +256,8 @@ async def help_command(interaction: discord.Interaction):
         {"nom": "clear", "description": "Supprime un certain nombre de messages dans le salon."},
         {"nom": "help", "description": "Affiche la liste des commandes disponibles."},
         {"nom": "youtube", "description": "T'emmène sur Youtube."},
-        {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."}
+        {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."},
+        {"nom": "messagecount", "description": "Affiche le nombre total de messages dans le salon."}
     ]
 
     embed = discord.Embed(
