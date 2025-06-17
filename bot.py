@@ -10,7 +10,7 @@ load_dotenv()
 print("Lancement du bot")
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
-BOT_VERSION = "1.0.0"
+BOT_VERSION = "1.0.1"
 
 @bot.event
 async def on_ready():
