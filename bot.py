@@ -3,11 +3,14 @@ import os
 from dotenv import load_dotenv
 from discord.ext import commands
 from datetime import datetime
+import random
 load_dotenv()
 
 
 print("Lancement du bot")
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+BOT_VERSION = "1.0.0"
 
 @bot.event
 async def on_ready():
@@ -99,7 +102,6 @@ async def heure(interaction: discord.Interaction):
     now = datetime.now().strftime("%H:%M:%S")
     await interaction.response.send_message(f"Il est {now}")
 
-
 @bot.tree.command(name="blague", description="Affiche une blague aléatoire")
 async def blague(interaction: discord.Interaction):
     blagues = [
@@ -163,7 +165,105 @@ async def pfc(interaction: discord.Interaction, choix: str):
         resultat = "Le bot a gagné ! 😢"
 
     await interaction.response.send_message(f"Vous avez choisi : {choix}\nLe bot a choisi : {bot_choix}\n**{resultat}**")
-    
-    
+
+@bot.tree.command(name="userinfo", description="Affiche des informations sur un utilisateur")
+async def userinfo(interaction: discord.Interaction, membre: discord.Member):
+        embed = discord.Embed(
+            title=f"Informations sur {membre.name}",
+            color=discord.Color.blue()
+        )
+        embed.set_thumbnail(url=membre.avatar.url)
+        embed.add_field(name="Nom d'utilisateur", value=membre.name, inline=True)
+        embed.add_field(name="ID", value=membre.id, inline=True)
+        embed.add_field(name="Créé le", value=membre.created_at.strftime("%d/%m/%Y à %H:%M:%S"), inline=False)
+        embed.add_field(name="Rejoint le serveur le", value=membre.joined_at.strftime("%d/%m/%Y à %H:%M:%S"), inline=False)
+        embed.set_footer(text="Commande exécutée par " + interaction.user.name)
+
+        await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="clear", description="Supprime un certain nombre de messages dans le salon.")
+@commands.has_permissions(manage_messages=True)
+async def clear(interaction: discord.Interaction, nombre: int):
+    if nombre <= 0:
+        await interaction.response.send_message("❌ Le nombre de messages à supprimer doit être supérieur à 0.", ephemeral=True)
+        return
+
+    # Supprime les messages
+    try:
+        deleted = await interaction.channel.purge(limit=nombre)
+        await interaction.response.send_message(f"✅ {len(deleted)} messages ont été supprimés.", ephemeral=True)
+    except Exception as e:
+        print(f"Erreur lors de la suppression des messages : {e}")
+        await interaction.response.send_message("❌ Une erreur s'est produite lors de la suppression des messages.", ephemeral=True)
+
+@bot.tree.command(name="version", description="Affiche la version actuelle du bot")
+async def version(interaction: discord.Interaction):
+    await interaction.response.send_message(f"🤖 Version actuelle du bot : **{BOT_VERSION}**")
+
+@bot.tree.command(name="serverinfo", description="Affiche des informations sur le serveur")
+async def serverinfo(interaction: discord.Interaction):
+    guild = interaction.guild  # Récupère les informations du serveur
+    embed = discord.Embed(
+        title=f"Informations sur le serveur : {guild.name}",
+        color=discord.Color.blue()
+    )
+    embed.set_thumbnail(url=guild.icon.url if guild.icon else None)  # Affiche l'icône du serveur s'il y en a une
+    embed.add_field(name="Nom du serveur", value=guild.name, inline=True)
+    embed.add_field(name="ID du serveur", value=guild.id, inline=True)
+    embed.add_field(name="Propriétaire", value=guild.owner.mention, inline=True)
+    embed.add_field(name="Nombre de membres", value=guild.member_count, inline=True)
+    embed.add_field(name="Créé le", value=guild.created_at.strftime("%d/%m/%Y à %H:%M:%S"), inline=False)
+    embed.set_footer(text=f"Commande exécutée par {interaction.user.name}")
+
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="messagecount", description="Affiche le nombre total de messages dans le salon.")
+async def messagecount(interaction: discord.Interaction):
+    try:
+        # Récupère tous les messages du salon
+        messages = await interaction.channel.history(limit=None).flatten()
+        total_messages = len(messages)
+
+        await interaction.response.send_message(f"📊 Le salon contient **{total_messages}** messages.")
+    except Exception as e:
+        print(f"Erreur lors de la récupération des messages : {e}")
+        await interaction.response.send_message("❌ Une erreur s'est produite lors de la récupération des messages.")
+
+
+@bot.tree.command(name="help", description="Affiche la liste des commandes disponibles")
+async def help_command(interaction: discord.Interaction):
+    commandes = [
+        {"nom": "credit", "description": "Voir mes créateurs."},
+        {"nom": "ping", "description": "Voir le ping du bot."},
+        {"nom": "support", "description": "Vous envoie au serveur support."},
+        {"nom": "warnguy", "description": "Alerter une personne."},
+        {"nom": "banguy", "description": "Bannir une personne."},
+        {"nom": "blague", "description": "Affiche une blague aléatoire."},
+        {"nom": "roll", "description": "Lance un dé à 6 faces."},
+        {"nom": "citation", "description": "Affiche une citation inspirante."},
+        {"nom": "avatar", "description": "Affiche l'avatar d'un utilisateur."},
+        {"nom": "sondage", "description": "Crée un sondage simple."},
+        {"nom": "pfc", "description": "Joue à Pierre-Feuille-Ciseaux avec le bot."},
+        {"nom": "time", "description": "Affiche l'heure actuelle."},
+        {"nom": "userinfo", "description": "Affiche des informations sur un utilisateur."},
+        {"nom": "version", "description": "Affiche la version actuelle du bot."},
+        {"nom": "clear", "description": "Supprime un certain nombre de messages dans le salon."},
+        {"nom": "help", "description": "Affiche la liste des commandes disponibles."},
+        {"nom": "youtube", "description": "T'emmène sur Youtube."},
+        {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."}
+    ]
+
+    embed = discord.Embed(
+        title="Liste des commandes disponibles",
+        description="Voici toutes les commandes que vous pouvez utiliser avec ce bot.",
+        color=discord.Color.green()
+    )
+
+    for commande in commandes:
+        embed.add_field(name=f"/{commande['nom']}", value=commande['description'], inline=False)
+
+    embed.set_footer(text=f"Version du bot : {BOT_VERSION}")
+    await interaction.response.send_message(embed=embed)
+
 
 bot.run(os.getenv('DISCORD_TOKEN'))
