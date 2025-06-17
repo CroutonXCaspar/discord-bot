@@ -220,9 +220,15 @@ async def serverinfo(interaction: discord.Interaction):
 @bot.tree.command(name="messagecount", description="Affiche le nombre total de messages dans le salon.")
 async def messagecount(interaction: discord.Interaction):
     try:
-        # Récupère tous les messages du salon
-        messages = await interaction.channel.history(limit=None).flatten()
-        total_messages = len(messages)
+        # Vérifie si le salon est valide
+        if not interaction.channel:
+            await interaction.response.send_message("❌ Impossible de récupérer les messages dans ce contexte.")
+            return
+
+        # Compte les messages dans le salon
+        total_messages = 0
+        async for message in interaction.channel.history(limit=None):
+            total_messages += 1
 
         await interaction.response.send_message(f"📊 Le salon contient **{total_messages}** messages.")
     except Exception as e:
