@@ -217,6 +217,18 @@ async def serverinfo(interaction: discord.Interaction):
 
     await interaction.response.send_message(embed=embed)
 
+@bot.tree.command(name="messagecount", description="Affiche le nombre total de messages dans le salon.")
+async def messagecount(interaction: discord.Interaction):
+    try:
+        # Récupère tous les messages du salon
+        messages = await interaction.channel.history(limit=None).flatten()
+        total_messages = len(messages)
+
+        await interaction.response.send_message(f"📊 Le salon contient **{total_messages}** messages.")
+    except Exception as e:
+        print(f"Erreur lors de la récupération des messages : {e}")
+        await interaction.response.send_message("❌ Une erreur s'est produite lors de la récupération des messages.")
+
 
 @bot.tree.command(name="help", description="Affiche la liste des commandes disponibles")
 async def help_command(interaction: discord.Interaction):
