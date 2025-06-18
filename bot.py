@@ -57,10 +57,15 @@ async def ping(interaction: discord.Interaction):
 async def support(interaction: discord.Interaction):
     await interaction.response.send_message("Voici le lien du serveur support: https://discord.gg/3Gh6wbC9zw")
 
-@bot.tree.command(name="warnguy", description="Aleerter une personne")
-async def banguy(interaction: discord.Interaction, member: discord.Member, reason: str):
-    await interaction.response.send_message("Alerte envoye")
-    await member.send("Tu as une alerte")
+@bot.tree.command(name="warnguy", description="Alerter une personne")
+async def warnguy(interaction: discord.Interaction, member: discord.Member, reason: str):
+    print(f"Commande exécutée pour {member.name} avec la raison : {reason}")
+    try:
+        await member.send(f"Tu as une alerte : {reason}")
+        await interaction.response.send_message(f"Alerte envoyée à {member.mention}.")
+    except Exception as e:
+        print(f"Erreur : {e}")
+        await interaction.response.send_message(f"❌ Impossible d'envoyer une alerte à {member.mention.", ephemeral=True)
 
 @bot.tree.command(name="banguy", description="Bannir une personne")
 async def warnguy(interaction: discord.Interaction, member: discord.Member, reason: str):
