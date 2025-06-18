@@ -65,7 +65,7 @@ async def warnguy(interaction: discord.Interaction, member: discord.Member, reas
         await interaction.response.send_message(f"Alerte envoyée à {member.mention}.")
     except Exception as e:
         print(f"Erreur : {e}")
-        await interaction.response.send_message(f"❌ Impossible d'envoyer une alerte à {member.mention.", ephemeral=True)
+        await interaction.response.send_message(f"❌ Impossible d'envoyer une alerte à {member.mention}.", ephemeral=True)
 
 @bot.tree.command(name="banguy", description="Bannir une personne")
 async def warnguy(interaction: discord.Interaction, member: discord.Member, reason: str):
