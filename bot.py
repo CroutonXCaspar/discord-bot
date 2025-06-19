@@ -272,6 +272,10 @@ async def weather(interaction: discord.Interaction, ville: str):
         response = requests.get(url)
         data = response.json()
 
+        # Debugging : Affiche les données retournées par l'API
+        print(response.status_code)
+        print(data)
+
         if data["cod"] != 200:
             await interaction.response.send_message(f"❌ Ville introuvable : {ville}.", ephemeral=True)
             return
