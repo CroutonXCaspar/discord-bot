@@ -322,7 +322,8 @@ async def help_command(interaction: discord.Interaction):
         {"nom": "youtube", "description": "T'emmène sur Youtube."},
         {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."},
         {"nom": "messagecount", "description": "Affiche le nombre total de messages dans le salon."},
-        {"nom": "math", "description": "Effectue un calcul mathématique simple (addition, soustraction, multiplication, division)."}
+        {"nom": "math", "description": "Effectue un calcul mathématique simple (addition, soustraction, multiplication, division)."},
+        {"nom": "weather", "description": "Affiche la météo d'une ville."}
     ]
 
     embed = discord.Embed(
