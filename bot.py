@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from datetime import datetime
 import random
+import requests
 load_dotenv()
 
 
@@ -259,6 +260,44 @@ async def math(interaction: discord.Interaction, operation: str, a: float, b: fl
     except Exception as e:
         print(f"Erreur lors du calcul : {e}")
         await interaction.response.send_message("❌ Une erreur s'est produite lors du calcul.", ephemeral=True)
+
+
+@bot.tree.command(name="weather", description="Affiche la météo d'une ville")
+async def weather(interaction: discord.Interaction, ville: str):
+    try:
+        # Remplacez "VOTRE_API_KEY" par votre clé API OpenWeatherMap
+        api_key = "VOTRE_API_KEY"
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={ville}&appid={api_key}&units=metric&lang=fr"
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data["cod"] != 200:
+            await interaction.response.send_message(f"❌ Ville introuvable : {ville}.", ephemeral=True)
+            return
+
+        # Récupère les informations météo
+        nom_ville = data["name"]
+        temperature = data["main"]["temp"]
+        description = data["weather"][0]["description"]
+        humidite = data["main"]["humidity"]
+        vent = data["wind"]["speed"]
+
+        # Crée un embed pour afficher les informations
+        embed = discord.Embed(
+            title=f"Météo à {nom_ville}",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="🌡️ Température", value=f"{temperature}°C", inline=True)
+        embed.add_field(name="🌤️ Description", value=description.capitalize(), inline=True)
+        embed.add_field(name="💧 Humidité", value=f"{humidite}%", inline=True)
+        embed.add_field(name="🌬️ Vent", value=f"{vent} m/s", inline=True)
+        embed.set_footer(text="Source : OpenWeatherMap")
+
+        await interaction.response.send_message(embed=embed)
+    except Exception as e:
+        print(f"Erreur lors de la récupération de la météo : {e}")
+        await interaction.response.send_message("❌ Une erreur s'est produite lors de la récupération de la météo.", ephemeral=True)
 
 
 @bot.tree.command(name="help", description="Affiche la liste des commandes disponibles")
