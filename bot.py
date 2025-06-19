@@ -236,6 +236,31 @@ async def messagecount(interaction: discord.Interaction):
         print(f"Erreur lors de la récupération des messages : {e}")
         await interaction.response.send_message("❌ Une erreur s'est produite lors de la récupération des messages.")
 
+
+@bot.tree.command(name="math", description="Effectue un calcul mathématique simple")
+async def math(interaction: discord.Interaction, operation: str, a: float, b: float):
+    try:
+        if operation == "addition":
+            result = a + b
+        elif operation == "soustraction":
+            result = a - b
+        elif operation == "multiplication":
+            result = a * b
+        elif operation == "division":
+            if b == 0:
+                await interaction.response.send_message("❌ Division par zéro impossible.", ephemeral=True)
+                return
+            result = a / b
+        else:
+            await interaction.response.send_message("❌ Opération invalide. Choisissez entre : addition, soustraction, multiplication, division.", ephemeral=True)
+            return
+
+        await interaction.response.send_message(f"✅ Résultat de {operation} entre {a} et {b} : **{result}**")
+    except Exception as e:
+        print(f"Erreur lors du calcul : {e}")
+        await interaction.response.send_message("❌ Une erreur s'est produite lors du calcul.", ephemeral=True)
+
+
 @bot.tree.command(name="help", description="Affiche la liste des commandes disponibles")
 async def help_command(interaction: discord.Interaction):
     commandes = [
@@ -256,7 +281,9 @@ async def help_command(interaction: discord.Interaction):
         {"nom": "clear", "description": "Supprime un certain nombre de messages dans le salon."},
         {"nom": "help", "description": "Affiche la liste des commandes disponibles."},
         {"nom": "youtube", "description": "T'emmène sur Youtube."},
-        {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."}
+        {"nom": "serverinfo", "description": "Affiche des informations sur le serveur."},
+        {"nom": "messagecount", "description": "Affiche le nombre total de messages dans le salon."},
+        {"nom": "math", "description": "Effectue un calcul mathématique simple (addition, soustraction, multiplication, division)."}
     ]
 
     embed = discord.Embed(
